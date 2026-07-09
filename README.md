@@ -1,20 +1,41 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# AlgoQuest
 
-# Run and deploy your AI Studio app
+Gamified Data Structures and Algorithms learning platform.
 
-This contains everything you need to run your app locally.
+## Pushing to GitHub
 
-View your app in AI Studio: https://ai.studio/apps/2afe0637-0170-4661-a71d-f3cc066f8bd7
+1. In the AI Studio editor, click the **Project Menu** (three dots) in the top-left or use the Export option.
+2. Select **Export to GitHub**.
+3. Authenticate with your GitHub account if you haven't already.
+4. Choose a repository name (e.g., `algoquest-dsa`) and decide whether it should be public or private.
+5. Click **Push to GitHub**.
 
-## Run Locally
+## Deploying to Vercel
 
-**Prerequisites:**  Node.js
+1. Create a free account at [Vercel.com](https://vercel.com/) and connect it to your GitHub account.
+2. Click **Add New Project** and import the repository you just created.
+3. Vercel will automatically detect that this is a **Vite/React** project. 
+4. **Environment Variables:** Before clicking deploy, expand the **Environment Variables** section and add the following variables. (You can find these values inside your local `firebase-applet-config.json`):
+   - `VITE_FIREBASE_API_KEY`
+   - `VITE_FIREBASE_AUTH_DOMAIN`
+   - `VITE_FIREBASE_PROJECT_ID`
+   - `VITE_FIREBASE_STORAGE_BUCKET`
+   - `VITE_FIREBASE_MESSAGING_SENDER_ID`
+   - `VITE_FIREBASE_APP_ID`
+   - `VITE_FIREBASE_DATABASE_ID` (usually `(default)` unless specified otherwise)
+   - `VITE_GEMINI_API_KEY`: (If you are using Gemini directly from the client. **Note:** AI Studio passes it as `GEMINI_API_KEY` to Vite, but for client-side Vercel deployments, ensure it's handled securely or you use the VITE_ prefix as configured).
+5. Click **Deploy**. Vercel will build and publish your app.
+6. A `vercel.json` file is already included in this repository to handle Single Page Application (SPA) routing, so direct links to different pages will work flawlessly.
 
+## Local Development
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+# Install dependencies
+npm install
+
+# Start the dev server
+npm run dev
+
+# Build for production
+npm run build
+```
