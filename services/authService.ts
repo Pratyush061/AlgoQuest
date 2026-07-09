@@ -100,10 +100,10 @@ try {
     auth = getAuth(app);
     db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
   } else {
-    console.error("⚠️ Firebase configuration missing: Please set VITE_FIREBASE_API_KEY and VITE_FIREBASE_PROJECT_ID environment variables.");
+    console.warn("⚠️ Firebase configuration missing: Please set VITE_FIREBASE_API_KEY and VITE_FIREBASE_PROJECT_ID environment variables.");
   }
 } catch (e) {
-  console.error("Firebase initialization failed:", e);
+  console.warn("Firebase initialization failed:", e);
 }
 
 const TREE_TYPES: TreeType[] = ['Mango', 'Orange', 'Banana', 'Apple'];

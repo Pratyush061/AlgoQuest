@@ -1,8 +1,18 @@
-
 import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { ChatMessage } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+let ai: GoogleGenAI | null = null;
+
+const getAiClient = () => {
+  const apiKey = process.env.API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey || apiKey === 'undefined' || apiKey === '') {
+    return null;
+  }
+  if (!ai) {
+    ai = new GoogleGenAI({ apiKey });
+  }
+  return ai;
+};
 
 export const getGeminiCoachResponse = async (
   history: ChatMessage[], 
@@ -10,6 +20,11 @@ export const getGeminiCoachResponse = async (
   userCode: string = ""
 ): Promise<string> => {
   try {
+    const aiClient = getAiClient();
+    if (!aiClient) {
+      return "The coding coach is currently offline because the GEMINI_API_KEY is not configured. Add the environment variable to enable this feature!";
+    }
+
     const systemInstruction = `
       You are an expert FAANG Interview DSA Coach. 
       Your goal is to help students solve coding problems without giving them the direct answer.
@@ -27,7 +42,7 @@ export const getGeminiCoachResponse = async (
       parts: [{ text: msg.text }]
     }));
 
-    const response = await ai.models.generateContent({
+    const response = await aiClient.models.generateContent({
       model: 'gemini-3-pro-preview',
       contents: contents as any,
       config: {
