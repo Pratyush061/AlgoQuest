@@ -71,12 +71,12 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   const errInfo: FirestoreErrorInfo = {
     error: error instanceof Error ? error.message : String(error),
     authInfo: {
-      userId: auth.currentUser?.uid,
-      email: auth.currentUser?.email,
-      emailVerified: auth.currentUser?.emailVerified,
-      isAnonymous: auth.currentUser?.isAnonymous,
-      tenantId: auth.currentUser?.tenantId,
-      providerInfo: auth.currentUser?.providerData.map(provider => ({
+      userId: auth?.currentUser?.uid,
+      email: auth?.currentUser?.email,
+      emailVerified: auth?.currentUser?.emailVerified,
+      isAnonymous: auth?.currentUser?.isAnonymous,
+      tenantId: auth?.currentUser?.tenantId,
+      providerInfo: auth?.currentUser?.providerData.map(provider => ({
         providerId: provider.providerId,
         displayName: provider.displayName,
         email: provider.email,
@@ -90,9 +90,21 @@ function handleFirestoreError(error: unknown, operationType: OperationType, path
   throw new Error(JSON.stringify(errInfo));
 }
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+let app: any = null;
+let auth: any = null;
+let db: any = null;
+
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.projectId) {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+  } else {
+    console.error("⚠️ Firebase configuration missing: Please set VITE_FIREBASE_API_KEY and VITE_FIREBASE_PROJECT_ID environment variables.");
+  }
+} catch (e) {
+  console.error("Firebase initialization failed:", e);
+}
 
 const TREE_TYPES: TreeType[] = ['Mango', 'Orange', 'Banana', 'Apple'];
 
@@ -121,6 +133,7 @@ const getFriendlyErrorMessage = (error: any): string => {
 export const authService = {
   async signUp(email: string, password: string): Promise<{ success: boolean, error?: string }> {
     try {
+      if (!auth) throw new Error("Firebase Auth not initialized. Please check your environment variables.");
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
 
@@ -152,6 +165,7 @@ export const authService = {
 
   async login(email: string, password: string): Promise<{ success: boolean, user?: User, error?: string }> {
     try {
+      if (!auth) throw new Error("Firebase Auth not initialized. Please check your environment variables.");
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const firebaseUser = userCredential.user;
       return { 
@@ -164,10 +178,16 @@ export const authService = {
   },
 
   async logout() {
-    await signOut(auth);
+    if (auth) {
+      await signOut(auth);
+    }
   },
 
   onAuthChange(callback: (user: User | null) => void) {
+    if (!auth) {
+      callback(null);
+      return () => {};
+    }
     return onAuthStateChanged(auth, (firebaseUser) => {
       if (firebaseUser) {
         callback({ email: firebaseUser.email || '', id: firebaseUser.uid });
@@ -178,6 +198,7 @@ export const authService = {
   },
 
   async getUserProgress(userId: string): Promise<UserProgress | null> {
+    if (!db) return null;
     const path = `users/${userId}`;
     try {
       const docRef = doc(db, "users", userId);
@@ -201,6 +222,7 @@ export const authService = {
   },
 
   async saveUserProgress(userId: string, progress: UserProgress) {
+    if (!db) return;
     const path = `users/${userId}`;
     try {
       await setDoc(doc(db, "users", userId), progress, { merge: true });
