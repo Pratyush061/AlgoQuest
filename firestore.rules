@@ -1,0 +1,33 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+    function isValidUserProgress(data) {
+      return data.userId is string &&
+             data.solvedQuestionIds is list &&
+             data.totalXP is number &&
+             data.level is number &&
+             data.streak is number &&
+             data.lastLoginDate is string;
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUserProgress(request.resource.data);
+      allow update: if isOwner(userId) && isValidUserProgress(request.resource.data);
+      allow delete: if false;
+    }
+  }
+}

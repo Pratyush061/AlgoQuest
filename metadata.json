@@ -1,0 +1,8 @@
+{
+  "name": "Pattern based AlgoQuest: Gamified DSA Master",
+  "description": "A comprehensive DSA learning platform with Duolingo-style gamification, dynamic question flows, and an interactive AI coaching assistant powered by Gemini.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "entities": {
+    "UserProgress": {
+      "title": "User Progress",
+      "description": "Stores the DSA progress and gamification state for a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "The unique ID of the user." },
+        "solvedQuestionIds": { "type": "array", "items": { "type": "string" }, "description": "List of question IDs solved by the user." },
+        "totalXP": { "type": "integer", "description": "Total experience points earned." },
+        "spentXP": { "type": "integer", "description": "Experience points spent in the store." },
+        "level": { "type": "integer", "description": "Current rank level." },
+        "streak": { "type": "integer", "description": "Current daily streak." },
+        "bonusGrowth": { "type": "integer", "description": "Growth boost from items." },
+        "fertilizerInventory": { "type": "object", "description": "Inventory of growth items." },
+        "lastLoginDate": { "type": "string", "format": "date-time", "description": "ISO timestamp of last login." },
+        "preferredLanguage": { "type": "string", "description": "User's preferred programming language." },
+        "badges": { "type": "array", "items": { "type": "object" }, "description": "List of earned badges." },
+        "topicScores": { "type": "object", "description": "Scores per topic." },
+        "reviewList": { "type": "array", "items": { "type": "string" }, "description": "List of question IDs marked for review." },
+        "dailyXP": { "type": "object", "description": "XP earned per day." },
+        "treeType": { "type": "string", "enum": ["Mango", "Orange", "Banana", "Apple"], "description": "Type of tree the user is growing." },
+        "solutions": { "type": "object", "description": "User's saved solutions for questions." }
+      },
+      "required": ["userId", "solvedQuestionIds", "totalXP", "level", "streak", "lastLoginDate"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProgress",
+      "description": "User progress document."
+    }
+  }
+}

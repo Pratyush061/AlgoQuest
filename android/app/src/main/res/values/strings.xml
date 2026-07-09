@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">AlgoQuest</string>
+    <string name="title_activity_main">AlgoQuest</string>
+    <string name="package_name">com.algoquest.app</string>
+    <string name="custom_url_scheme">com.algoquest.app</string>
+</resources>
